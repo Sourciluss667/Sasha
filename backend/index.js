@@ -5,6 +5,7 @@ const { exec } = require("child_process");
 
 const app = express()
 const port = 5667
+const path = process.platform === 'win32' ? "python3 .\\python_scripts\\qa.py " : "python3 ./python_scripts/qa.py "
 
 app.use(cors({
   origin: 'http://localhost:8080'
@@ -20,7 +21,7 @@ app.get('/', (req, res) => {
 app.post('/question', (req, res) => {
   let question = '"' + req.body.question + '"'
   console.log('Request for : ' + question)
-  exec("python .\\python_scripts\\qa.py " + question, (error, stdout, stderr) => {
+  exec(path + question, (error, stdout, stderr) => {
     if (error) {
       console.log(`error: ${error.message}`);
       res.sendStatus(500)

@@ -1,20 +1,11 @@
-# Question Reponse avec NLP
-# Basé sur CamemBERT
-# Principe : Entrer une question
-#            Trouver les mots clés de la phrase
-#            Recherche google et recupere le texte de la page
-#            Process camemBERT pour trouver la reponse
-# Exemple : "Quel est l'âge de Vin Diesel ?"
-#           Keywords = ["âge", "Vin Diesel"]
-#           Recherche google "âge Vin Diesel" et recup text de la page
-#           Process CamemBERT
-#           retourne l'âge : 53 ans
+#!/usr/bin/python3.6
+
 import sys
 import spacy
 import urllib
 import requests
 from bs4 import BeautifulSoup
-from transformers import AutoTokenizer, AutoModelForQuestionAnswering, pipeline
+from transformers import pipeline
 
 question = sys.argv[1]
 # Recherche GOOGLE
@@ -42,29 +33,35 @@ if resp.status_code == 200:
       texts.append(g.find_all('span')[0].text)
 
     # Get all sites descriptions
-    for g in soup.find_all('div', class_='IsZvec'):
+    for g in soup.find_all('div', class_='uUuwM'): # data-content-feature="1" dans une div, peut etre mieux ?
       texts.append(g.text)
 else:
   print("Google respond " + str(resp.status_code))
 
 # Répondre a la question d'apres les texts (si trouve pas de reponse adequate pour le premier texte, essaye le suivant)
-tokenizer = AutoTokenizer.from_pretrained("etalab-ia/camembert-base-squadFR-fquad-piaf")
-model = AutoModelForQuestionAnswering.from_pretrained("etalab-ia/camembert-base-squadFR-fquad-piaf")
-nlpqa = pipeline('question-answering', model=model, tokenizer=tokenizer)
+nlpqa = pipeline('question-answering', model='etalab-ia/camembert-base-squadFR-fquad-piaf', tokenizer='etalab-ia/camembert-base-squadFR-fquad-piaf')
 
-responses = []
+if len(texts) <= 0:
+  print("No text found")
+else:
+  responses = []
+  for t in texts:
+    if not t:
+      continue
+    responses.append(nlpqa(question=question, context=t))
 
-for t in texts:
-  if not t:
-    continue
-  responses.append(nlpqa(question=question, context=t))
+  final = responses[0]
 
-final = responses[0]
+  for r in responses:
+    # print(r)
+    if r['score'] > final['score']:
+      final = r
 
-for r in responses:
-  if r['score'] > final['score']:
-    final = r
+  result = final['answer']
 
-result = r['answer']
+  # Format result
+  result = result.strip(" ,.;:")
+  result = result[0].upper() + result[1:] + "."
 
-print(u"" + result)
+  # Show result
+  print(u"" + result)

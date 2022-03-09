@@ -8,3 +8,11 @@ Exemple :
 Qui est le président français ?
 
 Réponse : Emmanuel Macron
+
+## Installation
+
+### Backend
+
+npm install
+
+Installer requirements dans python_scripts/requirements.txt

@@ -1,23 +1,25 @@
 <template>
-  <img alt="RMVAI Logo" src="./assets/CVtD.gif">
-  <h1>Sasha, le bot qui a réponse à tout !</h1>
-  <InputComponent :backend_url="backend_url" style="margin-top: 100px;" />
+  <div>
+    <img alt="RMVAI Logo" src="./assets/CVtD.gif" />
+    <h1>Sasha, le bot qui a réponse à tout !</h1>
+    <InputComponent :backend_url="backend_url" style="margin-top: 100px" />
+  </div>
 </template>
 
 <script>
-import InputComponent from './components/InputComponent.vue'
+import InputComponent from "./components/InputComponent.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    InputComponent
+    InputComponent,
   },
   data: () => {
     return {
-      backend_url: 'http://' + window.location.hostname + ':5667'
-    }
-  }
-}
+      backend_url: "http://" + window.location.hostname + ":5667",
+    };
+  },
+};
 </script>
 
 <style>
